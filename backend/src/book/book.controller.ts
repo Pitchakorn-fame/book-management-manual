@@ -1,20 +1,51 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  BadRequestException,
+} from '@nestjs/common';
 import { BookService } from './book.service';
-import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import type { IBook, ICreateBook } from './entities/book.entity';
 
 @Controller('book')
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
   @Post()
-  create(@Body() createBookDto: CreateBookDto) {
-    return this.bookService.create(createBookDto);
+  @HttpCode(201)
+  createBook(@Body() newBook: ICreateBook): IBook {
+    //update validation later
+    if (!newBook) throw new BadRequestException('missing request body');
+
+    const { isbn, category, title, author, qty } = newBook;
+
+    if (!isbn || !category || !title || !author || (!qty && qty !== 0)) {
+      throw new BadRequestException('missing require field');
+    }
+
+    // qty have to > 0
+    if (qty <= 0)
+      throw new BadRequestException('book qty must be greater than 0');
+
+    console.log(isbn);
+    if (Number(isbn) && isbn.length !== 13)
+      throw new BadRequestException('isbn must be 13 digits');
+
+    // check isbn duplicate later
+
+    const book = this.bookService.createBook(newBook);
+    return book;
   }
 
   @Get()
-  findAll() {
-    return this.bookService.findAll();
+  getBooks() {
+    return this.bookService.getBooks();
   }
 
   @Get(':id')
