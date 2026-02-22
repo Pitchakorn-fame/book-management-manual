@@ -11,12 +11,17 @@ export interface IBaseModal {
   id: string;
   created_at: Date;
   updated_at: Date;
+  status: Status;
 }
 
 export enum Status {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }
-export interface IBook extends ICreateBook {
+export interface IBook extends IBaseModal {
   status: Status;
+}
+
+export interface ICreateBookResponse extends IBook {
+  bookk: IBook;
 }

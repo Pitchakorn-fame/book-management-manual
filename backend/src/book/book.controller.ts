@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -44,17 +45,30 @@ export class BookController {
   }
 
   @Get()
-  getBooks() {
+  getBooks(): IBook[] {
     return this.bookService.getBooks();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookService.findOne(+id);
+  getBookById(@Param('id') id: number) {
+    const bookId = Number(id);
+    if (isNaN(bookId)) {
+      throw new BadRequestException('id must be a number');
+    }
+    const book = this.bookService.getBookId(String(bookId));
+    if (!book) {
+      throw new NotFoundException('No book found');
+    }
+    return book;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+  update(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
+    const bookId = Number(id);
+    if (isNaN(bookId)) {
+      throw new BadRequestException('id must be a number');
+    }
+
     return this.bookService.update(+id, updateBookDto);
   }
 

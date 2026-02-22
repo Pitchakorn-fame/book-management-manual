@@ -8,7 +8,7 @@ export class BookService {
 
   createBook(newBook: ICreateBook): IBook {
     const initialCreateInfo = {
-      id: this.book.length + 1,
+      id: String(this.book.length + 1),
       created_at: new Date(),
       updated_at: new Date(),
       status: Status.ACTIVE,
@@ -19,12 +19,13 @@ export class BookService {
     return adjustNewBookInfo;
   }
 
-  getBooks() {
+  getBooks(): IBook[] {
     return this.book;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  getBookId(id: string): IBook | null {
+    const book = this.book.find((book) => book.id === id);
+    return book ?? null;
   }
 
   update(id: number, updateBookDto: UpdateBookDto) {
