@@ -18,10 +18,8 @@ export enum Status {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }
-export interface IBook extends IBaseModal {
+export interface IBook extends IBaseModal, ICreateBook {
   status: Status;
 }
 
-export interface ICreateBookResponse extends IBook {
-  bookk: IBook;
-}
+export type TUpdateBook = Omit<ICreateBook, 'isbn'>;

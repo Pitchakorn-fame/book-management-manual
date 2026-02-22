@@ -1,12 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateBookDto } from './dto/update-book.dto';
-import { IBook, ICreateBook, Status } from './entities/book.entity';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  IBook,
+  ICreateBook,
+  Status,
+  TUpdateBook,
+} from './entities/book.entity';
 
 @Injectable()
 export class BookService {
   private book: IBook[] = [];
 
   createBook(newBook: ICreateBook): IBook {
+    const isIsbnDuplicate = this.book.find(
+      (book) => book.isbn === newBook.isbn,
+    );
+    if (isIsbnDuplicate) {
+      throw new BadRequestException('This ISBN already exist');
+    }
     const initialCreateInfo = {
       id: String(this.book.length + 1),
       created_at: new Date(),
@@ -28,9 +38,22 @@ export class BookService {
     return book ?? null;
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    console.info(updateBookDto);
-    return `This action updates a #${id} book`;
+  update(id: string, updateBook: TUpdateBook): IBook {
+    console.info(updateBook);
+    const indexForUpdate = this.book.findIndex((book) => book.id === id);
+    const oldBookInfo = this.book[indexForUpdate];
+
+    const updateBookData: IBook[] = [...this.book];
+
+    const updateBookInfo = {
+      ...oldBookInfo,
+      ...updateBook,
+      updated_at: new Date(),
+    };
+
+    updateBookData[indexForUpdate] = updateBookInfo;
+
+    return updateBookInfo;
   }
 
   remove(id: number) {

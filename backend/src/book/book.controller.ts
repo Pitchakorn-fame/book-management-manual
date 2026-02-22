@@ -11,8 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BookService } from './book.service';
-import { UpdateBookDto } from './dto/update-book.dto';
-import type { IBook, ICreateBook } from './entities/book.entity';
+import type { IBook, ICreateBook, TUpdateBook } from './entities/book.entity';
 
 @Controller('book')
 export class BookController {
@@ -34,11 +33,8 @@ export class BookController {
     if (qty <= 0)
       throw new BadRequestException('book qty must be greater than 0');
 
-    console.log(isbn);
     if (Number(isbn) && isbn.length !== 13)
       throw new BadRequestException('isbn must be 13 digits');
-
-    // check isbn duplicate later
 
     const book = this.bookService.createBook(newBook);
     return book;
@@ -63,13 +59,24 @@ export class BookController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateBookDto: UpdateBookDto) {
+  update(@Param('id') id: number, @Body() updateBook: TUpdateBook) {
     const bookId = Number(id);
     if (isNaN(bookId)) {
       throw new BadRequestException('id must be a number');
     }
+    if (!updateBook) throw new BadRequestException('missing request body');
 
-    return this.bookService.update(+id, updateBookDto);
+    const { category, title, author, qty } = updateBook;
+
+    if (!category || !title || !author || (!qty && qty !== 0)) {
+      throw new BadRequestException('missing require field');
+    }
+
+    // qty have to > 0
+    if (qty <= 0)
+      throw new BadRequestException('book qty must be greater than 0');
+
+    return this.bookService.update(String(id), updateBook);
   }
 
   @Delete(':id')
