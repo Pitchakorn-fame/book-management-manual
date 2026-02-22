@@ -80,7 +80,12 @@ export class BookController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.bookService.remove(+id);
+  remove(@Param('id') id: string): IBook {
+    const bookId = Number(id);
+    if (isNaN(bookId)) {
+      throw new BadRequestException('id must be a number');
+    }
+    const book = this.bookService.remove(String(id));
+    return book;
   }
 }

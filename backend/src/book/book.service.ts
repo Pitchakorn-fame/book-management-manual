@@ -39,7 +39,6 @@ export class BookService {
   }
 
   update(id: string, updateBook: TUpdateBook): IBook {
-    console.info(updateBook);
     const indexForUpdate = this.book.findIndex((book) => book.id === id);
     const oldBookInfo = this.book[indexForUpdate];
 
@@ -52,11 +51,26 @@ export class BookService {
     };
 
     updateBookData[indexForUpdate] = updateBookInfo;
+    this.book = updateBookData;
 
     return updateBookInfo;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  remove(id: string): IBook {
+    const indexForDelete = this.book.findIndex((book) => book.id === id);
+    const oldBookInfo = this.book[indexForDelete];
+
+    const updateBookData: IBook[] = [...this.book];
+
+    const deleteBookInfo = {
+      ...oldBookInfo,
+      status: Status.INACTIVE,
+      updated_at: new Date(),
+    };
+
+    updateBookData[indexForDelete] = deleteBookInfo;
+    this.book = updateBookData;
+
+    return deleteBookInfo;
   }
 }
