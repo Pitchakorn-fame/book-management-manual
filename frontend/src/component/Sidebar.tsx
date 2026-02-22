@@ -8,7 +8,9 @@ const Sidebar = () => {
     >
       <div className="grid grid-cols-[auto_1fr] gap-2 bg-[#FFD580] items-center justify-center p-4 rounded-2xl font-bold">
         <div>Total Books</div>
-        <div className="p-1 bg-[#FFF] text-center text-xl rounded-xl">1350</div>
+        <div className="p-1 bg-[#FFF] text-center text-xl rounded-xl">
+          1,350
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { IBook } from "@/app/(public)/page";
 import { Icon } from "@iconify/react";
-import React from "react";
+
 interface IBookCardProps {
   bookCardInfo: IBook | null;
   onCloseModal: () => void;

@@ -1,16 +1,16 @@
-import { IBook } from "@/app/(public)/page";
+import { IBook, Status } from "@/constant/book-management";
 import { Icon } from "@iconify/react";
 
 interface IBookListProps {
   booksList: IBook[];
   onUpdateBookInfo: (book: IBook) => void;
   onGetBookCardInfo: (book: IBook) => void;
+  onGetIsbn: (isbn: string) => void;
 }
 
 const BookList = (props: IBookListProps) => {
-  console.info("props", props);
   const tableData = props.booksList;
-  // const tableData: IBook[] = [];
+
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-[#000]">
       <div className="h-full overflow-y-auto">
@@ -36,20 +36,23 @@ const BookList = (props: IBookListProps) => {
                   <td className="p-4 truncate">{book.title}</td>
                   <td className="p-4 truncate">{book.author}</td>
                   <td className="p-4">{book.status}</td>
-                  <td className="p-4 flex gap-2 items-center">
+                  <td
+                    className={`p-4 flex gap-2 items-center ${book.status === Status.INACTIVE ? "pointer-events-none" : {}}`}
+                  >
                     <Icon
                       icon="ci:info"
-                      className="text-2xl cursor-pointer text-blue-600"
+                      className={`text-2xl cursor-pointer text-blue-600`}
                       onClick={() => props.onGetBookCardInfo(book)}
                     />
                     <Icon
                       icon="boxicons:edit"
-                      className="text-2xl cursor-pointer"
+                      className={`text-2xl cursor-pointer ${book.status === Status.INACTIVE ? "text-[#E5E4E2]" : {}} `}
                       onClick={() => props.onUpdateBookInfo(book)}
                     />
                     <Icon
                       icon="material-symbols:delete-outline-rounded"
-                      className="text-2xl cursor-pointer text-red-500"
+                      className={`text-2xl cursor-pointer ${book.status === Status.INACTIVE ? "text-[#E5E4E2]" : "text-red-500"} `}
+                      onClick={() => props.onGetIsbn(book.isbn)}
                     />
                   </td>
                 </tr>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import TextInputField from "./form/TextInputField";
-import { IBook, Status } from "@/app/(public)/page";
+
 import { Icon } from "@iconify/react";
+import { IBook, Status } from "@/constant/book-management";
 
 interface IBookFormProps {
   onCloseModal: () => void;
@@ -95,12 +96,6 @@ const BookForm = (props: IBookFormProps) => {
     const isIsbnDuplicate = props.bookData.find(
       (book) => book.isbn === isbnValue,
     );
-    console.info(
-      "isIsbnDuplicate isbnValue updateBookInfo?.isbn",
-      isIsbnDuplicate,
-      isbnValue,
-      updateBookInfo?.isbn,
-    );
     if (isIsbnDuplicate && !updateBookInfo) {
       return setIsbnInvalidMessage("Duplicate ISBN");
     }
@@ -111,8 +106,6 @@ const BookForm = (props: IBookFormProps) => {
       props.onUpdateBook(adjustNewBookData);
     }
     props.onCloseModal();
-    console.log("on submit adjustNewBookData", adjustNewBookData);
-    console.log("on submit");
   };
 
   return (

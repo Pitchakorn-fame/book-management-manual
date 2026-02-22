@@ -1,53 +1,28 @@
 "use client";
+import { useMemo, useState } from "react";
 
 import BookList from "@/component/BookList";
-// import BookCard from "@/component/BookCard";
-import { useRouter } from "next/navigation";
-import Sidebar from "@/component/Sidebar";
-import SearchBar from "@/component/SearchBar";
-import { useMemo, useState } from "react";
 import BookCard from "@/component/BookCard";
+import SearchBar from "@/component/SearchBar";
 import BookForm from "@/component/BookForm";
 
-export enum Status {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-}
-
-export interface IBook {
-  isbn: string;
-  category: string;
-  title: string;
-  author: string;
-  qty: number;
-  status: Status;
-}
-const mockupBookData: IBook[] = Array.from({ length: 10 }, (_, i) => {
-  return {
-    isbn: `${i + 1}`.repeat(13).slice(0, 13),
-    category: `category ${i + 1}`,
-    title: `title ${i + 1}`,
-    author: `author ${i + 1}`,
-    qty: i + 1,
-    status: Status.ACTIVE,
-  };
-});
+import Sidebar from "@/component/Sidebar";
+import ConfirmDelete from "@/component/ConfirmDelete";
+import { IBook, mockupBookData, Status } from "@/constant/book-management";
 
 const Page = () => {
-  const router = useRouter();
   const [bookData, setBookData] = useState<IBook[]>(mockupBookData);
   const [updateBookInfo, setUpdateBookInfo] = useState<IBook | null>(null);
   const [bookCardInfo, setBookCardInfo] = useState<IBook | null>(null);
-  const onChangePage = () => {
-    router.push("/testpage");
-  };
-
-  console.info("mockupBookData", mockupBookData);
+  const [deleteIsbn, setDeleteIsbn] = useState<string | null>(null);
 
   const [searchText, setSearchText] = useState<string>("");
+
   const [isOpenBookActionModal, setIsOpenBookActionModal] =
     useState<boolean>(false);
   const [isOpenBookCardModal, setIsOpenBookCardModal] =
+    useState<boolean>(false);
+  const [isOpenConfirmDeleteModal, setIsOpenConfirmDeleteModal] =
     useState<boolean>(false);
 
   const filterBookData = useMemo(() => {
@@ -61,14 +36,12 @@ const Page = () => {
         book.title.includes(searchTextLowerCase),
     );
   }, [searchText, bookData]);
-  console.log("filterBookData", filterBookData);
 
   const handleAddNewBook = (book: IBook) => {
     setBookData((prevBooks) => [book, ...prevBooks]);
   };
 
   const updateBookData = (book: IBook) => {
-    console.log("isbn", book);
     setUpdateBookInfo(book);
     setIsOpenBookActionModal(true);
   };
@@ -89,7 +62,6 @@ const Page = () => {
   };
 
   const handleBookCardInfo = (book: IBook) => {
-    console.log("isbn", book);
     setBookCardInfo(book);
     setIsOpenBookCardModal(true);
   };
@@ -98,17 +70,39 @@ const Page = () => {
     setIsOpenBookCardModal(false);
   };
 
+  const handleCloseConfirmDeleteModal = () => {
+    setDeleteIsbn(null);
+    setIsOpenConfirmDeleteModal(false);
+  };
+
+  const handleDeleteBookInfo = (isbn: string) => {
+    setDeleteIsbn(isbn);
+    setIsOpenConfirmDeleteModal(true);
+  };
+
+  const handleDeleteBook = () => {
+    const indexForUpdate = bookData.findIndex(
+      (book) => book.isbn === deleteIsbn,
+    );
+    const updateBookData = [...bookData];
+
+    updateBookData[indexForUpdate] = {
+      ...updateBookData[indexForUpdate],
+      status: Status.INACTIVE,
+    };
+    setBookData(updateBookData);
+    setDeleteIsbn(null);
+    setIsOpenConfirmDeleteModal(false);
+  };
+
   return (
     <>
       <div
-        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenBookActionModal || isOpenBookCardModal ? "opacity-65 pointer-events-none" : ""}`}
+        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenBookActionModal || isOpenBookCardModal || isOpenConfirmDeleteModal ? "opacity-65 pointer-events-none" : ""}`}
       >
         <Sidebar />
         <div className="flex flex-col gap-8 p-6 overflow-hidden">
           <div className="text-3xl font-bold">Book Management System</div>
-          <div className="bg-amber-600 cursor-pointer" onClick={onChangePage}>
-            Page
-          </div>
           <div className="grid grid-cols-[1fr_auto] gap-6 w-full h-fit">
             <SearchBar
               searchValue={searchText}
@@ -127,6 +121,7 @@ const Page = () => {
             booksList={filterBookData}
             onUpdateBookInfo={updateBookData}
             onGetBookCardInfo={handleBookCardInfo}
+            onGetIsbn={handleDeleteBookInfo}
           />
         </div>
       </div>
@@ -143,6 +138,12 @@ const Page = () => {
         <BookCard
           bookCardInfo={bookCardInfo}
           onCloseModal={handleCloseBookCardModal}
+        />
+      )}
+      {isOpenConfirmDeleteModal && (
+        <ConfirmDelete
+          onCloseModal={handleCloseConfirmDeleteModal}
+          onConfirmDelete={handleDeleteBook}
         />
       )}
     </>
