@@ -36,6 +36,7 @@ const mockupBookData: IBook[] = Array.from({ length: 5 }, (_, i) => {
 const Page = () => {
   const router = useRouter();
   const [bookData, setBookData] = useState<IBook[]>(mockupBookData);
+  const [updateBookInfo, setUpdateBookInfo] = useState<IBook | null>(null);
   const onChangePage = () => {
     router.push("/testpage");
   };
@@ -43,7 +44,8 @@ const Page = () => {
   console.info("mockupBookData", mockupBookData);
 
   const [searchText, setSearchText] = useState<string>("");
-  const [isOpenAddBookModal, setIsOpenAddBookModal] = useState<boolean>(false);
+  const [isOpenBookActionModal, setIsOpenBookActionModal] =
+    useState<boolean>(false);
 
   const filterBookData = useMemo(() => {
     const searchTextLowerCase = searchText.toLowerCase();
@@ -61,10 +63,32 @@ const Page = () => {
   const handleAddNewBook = (book: IBook) => {
     setBookData((prevBooks) => [book, ...prevBooks]);
   };
+
+  const updateBookData = (book: IBook) => {
+    console.log("isbn", book);
+    setUpdateBookInfo(book);
+    setIsOpenBookActionModal(true);
+  };
+
+  const handleUpdateBook = (updateBook: IBook) => {
+    const indexForUpdate = bookData.findIndex(
+      (book) => book.isbn === updateBook.isbn,
+    );
+    const updateBookData = [...bookData];
+
+    updateBookData[indexForUpdate] = updateBook;
+    setBookData(updateBookData);
+  };
+
+  const handleCloseBookActionModal = () => {
+    setUpdateBookInfo(null);
+    setIsOpenBookActionModal(false);
+  };
+
   return (
     <>
       <div
-        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenAddBookModal ? "opacity-65 pointer-events-none" : ""}`}
+        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenBookActionModal ? "opacity-65 pointer-events-none" : ""}`}
       >
         <Sidebar />
         <div className="flex flex-col gap-8 p-6 overflow-hidden">
@@ -81,19 +105,25 @@ const Page = () => {
             />
             <button
               className="flex justify-center items-center p-4 h-12 rounded-2xl border border-[#FF7F50] cursor-pointer hover:bg-[#FF7F50] hover:text-[#FFF] font-bold w-50"
-              onClick={() => setIsOpenAddBookModal(true)}
+              onClick={() => setIsOpenBookActionModal(true)}
             >
               Add book
             </button>
           </div>
-          <BookList booksList={filterBookData} />
+          <BookList
+            booksList={filterBookData}
+            onUpdateBookInfo={updateBookData}
+          />
           {/* <BookCard /> */}
         </div>
       </div>
-      {isOpenAddBookModal && (
+      {isOpenBookActionModal && (
         <BookForm
-          onCloseModal={() => setIsOpenAddBookModal(false)}
+          onCloseModal={handleCloseBookActionModal}
           onAddNewBook={handleAddNewBook}
+          updateBookInfo={updateBookInfo}
+          bookData={bookData}
+          onUpdateBook={handleUpdateBook}
         />
       )}
     </>

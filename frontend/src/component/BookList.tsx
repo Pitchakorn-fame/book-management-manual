@@ -2,6 +2,7 @@ import { IBook } from "@/app/(public)/page";
 
 interface IBookListProps {
   booksList: IBook[];
+  onUpdateBookInfo: (book: IBook) => void;
 }
 
 const BookList = (props: IBookListProps) => {
@@ -35,7 +36,7 @@ const BookList = (props: IBookListProps) => {
                   <td className="p-4">{book.status}</td>
                   <td className="p-4 flex gap-1">
                     <div>info</div>
-                    <div>edit</div>
+                    <div onClick={() => props.onUpdateBookInfo(book)}>edit</div>
                     <div>delete</div>
                   </td>
                 </tr>

@@ -9,6 +9,7 @@ interface ITextInputFieldProps {
   required?: boolean;
   errorMessage?: string;
   maxLength?: number;
+  disable?: boolean;
 }
 
 const TextInputField = (props: ITextInputFieldProps) => {
@@ -23,13 +24,14 @@ const TextInputField = (props: ITextInputFieldProps) => {
       <div className="flex flex-col gap-1">
         <input
           type="text"
-          className="h-12 w-full outline-[#BEBEBE] outline-1 focus:outline-[#F28C28] rounded-2xl p-3"
+          className={`h-12 w-full outline-[#BEBEBE] outline-1 focus:outline-[#F28C28] rounded-2xl p-3 cursor-pointer ${props.disable ? "opacity-50 pointer-events-none" : ""}`}
           placeholder={props.placeholder ?? ""}
           value={props.textValue}
           maxLength={props.maxLength ?? 100}
           onChange={(e) => {
             props.onChangeFunction(e.target.value);
           }}
+          disabled={props.disable}
         />
         {props.errorMessage && (
           <p className="text-red-500 text-[14px]">{props.errorMessage}</p>

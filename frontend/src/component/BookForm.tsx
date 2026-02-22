@@ -12,27 +12,42 @@ import { IBook, Status } from "@/app/(public)/page";
 interface IBookFormProps {
   onCloseModal: () => void;
   onAddNewBook: (book: IBook) => void;
+  updateBookInfo?: IBook | null;
+  bookData: IBook[];
+  onUpdateBook: (book: IBook) => void;
 }
 
 const BookForm = (props: IBookFormProps) => {
+  // console.info("first")
   //   const { register, handleSubmit } = useForm({
   //     defaultValues: ADD_NEW_BOOK_DEFAULT_VALUES,
   //     resolver: zodResolver(addNewBookFormSchema),
   //   });
-  const [isbnValue, setIsbnValue] = useState<string>("");
+  const updateBookInfo = props.updateBookInfo;
+  const [isbnValue, setIsbnValue] = useState<string>(
+    updateBookInfo?.isbn ?? "",
+  );
   const [isbnInvalidMessage, setIsbnInvalidMessage] = useState<string>("");
 
-  const [categoryValue, setCategoryValue] = useState<string>("");
+  const [categoryValue, setCategoryValue] = useState<string>(
+    updateBookInfo?.category ?? "",
+  );
   const [categoryInvalidMessage, setCategoryInvalidMessage] =
     useState<string>("");
 
-  const [titleValue, setTitleValue] = useState<string>("");
+  const [titleValue, setTitleValue] = useState<string>(
+    updateBookInfo?.title ?? "",
+  );
   const [titleInvalidMessage, setTitleInvalidMessage] = useState<string>("");
 
-  const [authorValue, setAuthorValue] = useState<string>("");
+  const [authorValue, setAuthorValue] = useState<string>(
+    updateBookInfo?.author ?? "",
+  );
   const [authorInvalidMessage, setAuthorInvalidMessage] = useState<string>("");
 
-  const [qtyValue, setQtyValue] = useState<string>("");
+  const [qtyValue, setQtyValue] = useState<string>(
+    !!updateBookInfo ? String(updateBookInfo?.qty) : "",
+  );
   const [qtyInvalidMessage, setQtyInvalidMessage] = useState<string>("");
 
   const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -79,6 +94,13 @@ const BookForm = (props: IBookFormProps) => {
     )
       return;
 
+    // const isIsbnDuplicate = props.bookData.find(
+    //   (book) => book.isbn === isbnValue,
+    // );
+    // if (isIsbnDuplicate && !updateBookInfo) {
+    //   return setIsbnInvalidMessage("Duplicate ISBN");
+    // }
+
     const adjustNewBookData: IBook = {
       isbn: isbnValue,
       category: categoryValue,
@@ -88,7 +110,24 @@ const BookForm = (props: IBookFormProps) => {
       status: Status.ACTIVE,
     };
 
-    props.onAddNewBook(adjustNewBookData);
+    const isIsbnDuplicate = props.bookData.find(
+      (book) => book.isbn === isbnValue,
+    );
+    console.info(
+      "isIsbnDuplicate isbnValue updateBookInfo?.isbn",
+      isIsbnDuplicate,
+      isbnValue,
+      updateBookInfo?.isbn,
+    );
+    if (isIsbnDuplicate && !updateBookInfo) {
+      return setIsbnInvalidMessage("Duplicate ISBN");
+    }
+
+    if (!updateBookInfo) {
+      props.onAddNewBook(adjustNewBookData);
+    } else {
+      props.onUpdateBook(adjustNewBookData);
+    }
     props.onCloseModal();
     console.log("on submit adjustNewBookData", adjustNewBookData);
     console.log("on submit");
@@ -99,7 +138,9 @@ const BookForm = (props: IBookFormProps) => {
       className="flex flex-col gap-4 p-6 z-50 bg-white rounded-2xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] border border-[#FF7F50]"
     >
       <div className="flex justify-between items-center">
-        <div className="text-2xl font-bold">Add Book</div>
+        <div className="text-2xl font-bold">
+          {!!updateBookInfo ? "Update book" : "Add Book"}
+        </div>
         <div className="font-bold cursor-pointer" onClick={props.onCloseModal}>
           X
         </div>
@@ -113,6 +154,7 @@ const BookForm = (props: IBookFormProps) => {
         maxLength={13}
         required
         errorMessage={isbnInvalidMessage}
+        disable={!!updateBookInfo}
       />
       <TextInputField
         id="category"
