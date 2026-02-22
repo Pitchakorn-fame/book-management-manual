@@ -1,8 +1,10 @@
 import { IBook } from "@/app/(public)/page";
+import { Icon } from "@iconify/react";
 
 interface IBookListProps {
   booksList: IBook[];
   onUpdateBookInfo: (book: IBook) => void;
+  onGetBookCardInfo: (book: IBook) => void;
 }
 
 const BookList = (props: IBookListProps) => {
@@ -34,10 +36,21 @@ const BookList = (props: IBookListProps) => {
                   <td className="p-4 truncate">{book.title}</td>
                   <td className="p-4 truncate">{book.author}</td>
                   <td className="p-4">{book.status}</td>
-                  <td className="p-4 flex gap-1">
-                    <div>info</div>
-                    <div onClick={() => props.onUpdateBookInfo(book)}>edit</div>
-                    <div>delete</div>
+                  <td className="p-4 flex gap-2 items-center">
+                    <Icon
+                      icon="ci:info"
+                      className="text-2xl cursor-pointer text-blue-600"
+                      onClick={() => props.onGetBookCardInfo(book)}
+                    />
+                    <Icon
+                      icon="boxicons:edit"
+                      className="text-2xl cursor-pointer"
+                      onClick={() => props.onUpdateBookInfo(book)}
+                    />
+                    <Icon
+                      icon="material-symbols:delete-outline-rounded"
+                      className="text-2xl cursor-pointer text-red-500"
+                    />
                   </td>
                 </tr>
               ))}

@@ -22,9 +22,9 @@ export interface IBook {
   qty: number;
   status: Status;
 }
-const mockupBookData: IBook[] = Array.from({ length: 5 }, (_, i) => {
+const mockupBookData: IBook[] = Array.from({ length: 10 }, (_, i) => {
   return {
-    isbn: `${i + 1}`.repeat(13),
+    isbn: `${i + 1}`.repeat(13).slice(0, 13),
     category: `category ${i + 1}`,
     title: `title ${i + 1}`,
     author: `author ${i + 1}`,
@@ -37,6 +37,7 @@ const Page = () => {
   const router = useRouter();
   const [bookData, setBookData] = useState<IBook[]>(mockupBookData);
   const [updateBookInfo, setUpdateBookInfo] = useState<IBook | null>(null);
+  const [bookCardInfo, setBookCardInfo] = useState<IBook | null>(null);
   const onChangePage = () => {
     router.push("/testpage");
   };
@@ -45,6 +46,8 @@ const Page = () => {
 
   const [searchText, setSearchText] = useState<string>("");
   const [isOpenBookActionModal, setIsOpenBookActionModal] =
+    useState<boolean>(false);
+  const [isOpenBookCardModal, setIsOpenBookCardModal] =
     useState<boolean>(false);
 
   const filterBookData = useMemo(() => {
@@ -85,10 +88,20 @@ const Page = () => {
     setIsOpenBookActionModal(false);
   };
 
+  const handleBookCardInfo = (book: IBook) => {
+    console.log("isbn", book);
+    setBookCardInfo(book);
+    setIsOpenBookCardModal(true);
+  };
+  const handleCloseBookCardModal = () => {
+    setBookCardInfo(null);
+    setIsOpenBookCardModal(false);
+  };
+
   return (
     <>
       <div
-        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenBookActionModal ? "opacity-65 pointer-events-none" : ""}`}
+        className={`grid grid-cols-[auto_1fr] h-screen relative ${isOpenBookActionModal || isOpenBookCardModal ? "opacity-65 pointer-events-none" : ""}`}
       >
         <Sidebar />
         <div className="flex flex-col gap-8 p-6 overflow-hidden">
@@ -113,8 +126,8 @@ const Page = () => {
           <BookList
             booksList={filterBookData}
             onUpdateBookInfo={updateBookData}
+            onGetBookCardInfo={handleBookCardInfo}
           />
-          {/* <BookCard /> */}
         </div>
       </div>
       {isOpenBookActionModal && (
@@ -124,6 +137,12 @@ const Page = () => {
           updateBookInfo={updateBookInfo}
           bookData={bookData}
           onUpdateBook={handleUpdateBook}
+        />
+      )}
+      {isOpenBookCardModal && (
+        <BookCard
+          bookCardInfo={bookCardInfo}
+          onCloseModal={handleCloseBookCardModal}
         />
       )}
     </>
