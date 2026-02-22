@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import TextInputField from "./form/TextInputField";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -8,51 +7,163 @@ import {
   addNewBookFormSchema,
 } from "@/schemas/add-new-book";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IBook, Status } from "@/app/(public)/page";
 
 interface IBookFormProps {
   onCloseModal: () => void;
+  onAddNewBook: (book: IBook) => void;
 }
 
-const BookForm = (prop: IBookFormProps) => {
+const BookForm = (props: IBookFormProps) => {
   //   const { register, handleSubmit } = useForm({
   //     defaultValues: ADD_NEW_BOOK_DEFAULT_VALUES,
   //     resolver: zodResolver(addNewBookFormSchema),
   //   });
-  const [test, setTest] = useState<string>("");
-  const onSubmit: SubmitHandler<AddNewBookForm> = (value: AddNewBookForm) => {
+  const [isbnValue, setIsbnValue] = useState<string>("");
+  const [isbnInvalidMessage, setIsbnInvalidMessage] = useState<string>("");
+
+  const [categoryValue, setCategoryValue] = useState<string>("");
+  const [categoryInvalidMessage, setCategoryInvalidMessage] =
+    useState<string>("");
+
+  const [titleValue, setTitleValue] = useState<string>("");
+  const [titleInvalidMessage, setTitleInvalidMessage] = useState<string>("");
+
+  const [authorValue, setAuthorValue] = useState<string>("");
+  const [authorInvalidMessage, setAuthorInvalidMessage] = useState<string>("");
+
+  const [qtyValue, setQtyValue] = useState<string>("");
+  const [qtyInvalidMessage, setQtyInvalidMessage] = useState<string>("");
+
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isbnValue.trim().length !== 13) {
+      setIsbnInvalidMessage("ISBN must be 13 digits");
+    } else {
+      setIsbnInvalidMessage("");
+    }
+
+    if (!categoryValue.trim()) {
+      setCategoryInvalidMessage("Please enter category");
+    } else {
+      setCategoryInvalidMessage("");
+    }
+
+    if (!titleValue.trim()) {
+      setTitleInvalidMessage("Please enter book title");
+    } else {
+      setTitleInvalidMessage("");
+    }
+    if (!authorValue.trim()) {
+      setAuthorInvalidMessage("Please enter autor");
+    } else {
+      setAuthorInvalidMessage("");
+    }
+
+    const bookQty = Number(qtyValue);
+    if (isNaN(bookQty) || bookQty <= 0) {
+      setQtyInvalidMessage(
+        "Book quantity must be integer number and greater than 0",
+      );
+    } else {
+      setQtyInvalidMessage("");
+    }
+
+    if (
+      isbnValue.length !== 13 ||
+      !categoryValue ||
+      !titleValue ||
+      !authorValue ||
+      isNaN(bookQty) ||
+      bookQty <= 0
+    )
+      return;
+
+    const adjustNewBookData: IBook = {
+      isbn: isbnValue,
+      category: categoryValue,
+      title: titleValue,
+      author: authorValue,
+      qty: bookQty,
+      status: Status.ACTIVE,
+    };
+
+    props.onAddNewBook(adjustNewBookData);
+    props.onCloseModal();
+    console.log("on submit adjustNewBookData", adjustNewBookData);
     console.log("on submit");
-    console.log("on submit ", value);
   };
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-4 p-6 z-50 bg-white rounded-2xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] border border-[#FF7F50]"
     >
       <div className="flex justify-between items-center">
         <div className="text-2xl font-bold">Add Book</div>
-        <div className="font-bold cursor-pointer" onClick={prop.onCloseModal}>
+        <div className="font-bold cursor-pointer" onClick={props.onCloseModal}>
           X
         </div>
       </div>
       <TextInputField
         id="isbn"
         label="ISBN"
-        textValue={test}
-        onChangeFunction={(value) => setTest(value)}
+        textValue={isbnValue}
+        onChangeFunction={(value) => setIsbnValue(value)}
         placeholder="Enter ISBN e.g. 8503957483002"
+        maxLength={13}
         required
+        errorMessage={isbnInvalidMessage}
       />
       <TextInputField
         id="category"
         label="Category"
-        textValue={test}
-        onChangeFunction={(value) => setTest(value)}
+        textValue={categoryValue}
+        onChangeFunction={(value) => setCategoryValue(value)}
         placeholder="Enter category e.g. Fiction"
         required
+        errorMessage={categoryInvalidMessage}
       />
-      <button type="submit" className="text-3xl bg-amber-700 h-10">
-        Save
-      </button>
+      <TextInputField
+        id="title"
+        label="Book title"
+        textValue={titleValue}
+        onChangeFunction={(value) => setTitleValue(value)}
+        placeholder="Enter Book title e.g. The Hunger game"
+        required
+        errorMessage={titleInvalidMessage}
+      />
+      <TextInputField
+        id="author"
+        label="Author"
+        textValue={authorValue}
+        onChangeFunction={(value) => setAuthorValue(value)}
+        placeholder="Enter Author e.g. Suzanne Collins"
+        required
+        errorMessage={authorInvalidMessage}
+      />
+      <TextInputField
+        id="qty"
+        label="Book quantity"
+        textValue={qtyValue}
+        onChangeFunction={(value) => setQtyValue(value)}
+        placeholder="Book quantity must be at least 1"
+        required
+        errorMessage={qtyInvalidMessage}
+      />
+      <div className="flex gap-2 justify-end font-bold">
+        <button
+          onClick={props.onCloseModal}
+          className="border border-[#FF7F50] p-2 rounded-2xl w-25 cursor-pointer h-fit"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="bg-[#FF7F50] text-white p-2 rounded-2xl w-25 cursor-pointer h-fit"
+        >
+          Create
+        </button>
+      </div>
     </form>
   );
 };

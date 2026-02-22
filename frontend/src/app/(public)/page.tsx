@@ -13,6 +13,7 @@ export enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
 }
+
 export interface IBook {
   isbn: string;
   category: string;
@@ -21,23 +22,24 @@ export interface IBook {
   qty: number;
   status: Status;
 }
+const mockupBookData: IBook[] = Array.from({ length: 5 }, (_, i) => {
+  return {
+    isbn: `${i + 1}`.repeat(13),
+    category: `category ${i + 1}`,
+    title: `title ${i + 1}`,
+    author: `author ${i + 1}`,
+    qty: i + 1,
+    status: Status.ACTIVE,
+  };
+});
 
 const Page = () => {
   const router = useRouter();
+  const [bookData, setBookData] = useState<IBook[]>(mockupBookData);
   const onChangePage = () => {
     router.push("/testpage");
   };
 
-  const mockupBookData: IBook[] = Array.from({ length: 5 }, (_, i) => {
-    return {
-      isbn: `${i + 1}`.repeat(13),
-      category: `category ${i + 1}`,
-      title: `title ${i + 1}`,
-      author: `author ${i + 1}`,
-      qty: i + 1,
-      status: Status.ACTIVE,
-    };
-  });
   console.info("mockupBookData", mockupBookData);
 
   const [searchText, setSearchText] = useState<string>("");
@@ -45,17 +47,20 @@ const Page = () => {
 
   const filterBookData = useMemo(() => {
     const searchTextLowerCase = searchText.toLowerCase();
-    console.info("searchTextLowerCase", searchTextLowerCase);
-    console.info("searchTextLowerCase status 0", mockupBookData[0].status);
-    return mockupBookData.filter(
+
+    return bookData.filter(
       (book) =>
         book.isbn.includes(searchTextLowerCase) ||
         book.category.includes(searchTextLowerCase) ||
         book.author.includes(searchTextLowerCase) ||
         book.title.includes(searchTextLowerCase),
     );
-  }, [searchText, mockupBookData]);
+  }, [searchText, bookData]);
   console.log("filterBookData", filterBookData);
+
+  const handleAddNewBook = (book: IBook) => {
+    setBookData((prevBooks) => [book, ...prevBooks]);
+  };
   return (
     <>
       <div
@@ -86,7 +91,10 @@ const Page = () => {
         </div>
       </div>
       {isOpenAddBookModal && (
-        <BookForm onCloseModal={() => setIsOpenAddBookModal(false)} />
+        <BookForm
+          onCloseModal={() => setIsOpenAddBookModal(false)}
+          onAddNewBook={handleAddNewBook}
+        />
       )}
     </>
   );
