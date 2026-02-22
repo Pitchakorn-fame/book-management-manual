@@ -14,7 +14,7 @@ const BookList = (props: IBookListProps) => {
         <table className="w-full border-collapse overflow-scroll">
           <thead className="bg-[#FF7F50] sticky top-0">
             <tr>
-              <th className="p-4 w-[5%] text-left">No.</th>
+              <th className="p-4 w-[5%] text-center">No.</th>
               <th className="p-4 w-[15%] text-left">ISBN</th>
               <th className="p-4 w-[15%] text-left">Catagory</th>
               <th className="p-4 w-[20%] text-left">name</th>
@@ -27,7 +27,7 @@ const BookList = (props: IBookListProps) => {
             {tableData.length > 0 &&
               tableData.map((book, index) => (
                 <tr key={book.isbn}>
-                  <td className="p-4">{index + 1}</td>
+                  <td className="p-4 text-center">{index + 1}</td>
                   <td className="p-4">{book.isbn}</td>
                   <td className="p-4">{book.category}</td>
                   <td className="p-4 truncate">{book.title}</td>
