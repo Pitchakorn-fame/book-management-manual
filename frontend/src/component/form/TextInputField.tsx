@@ -1,6 +1,7 @@
 import React from "react";
 
 interface ITextInputFieldProps {
+  id: string;
   label?: string;
   textValue: string;
   onChangeFunction: (value: string) => void;
@@ -10,7 +11,7 @@ interface ITextInputFieldProps {
 
 const TextInputField = (props: ITextInputFieldProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div id={`${props.id}-input`} className="flex flex-col gap-2">
       {props.label && (
         <p className="font-bold">
           {props.label}
