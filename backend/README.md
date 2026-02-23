@@ -32,5 +32,5 @@ How to run the project
 3. npm install
 4. npm run start
 
-How to run tests
+How to run tests: 
 npm run test
