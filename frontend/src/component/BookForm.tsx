@@ -179,7 +179,7 @@ const BookForm = (props: IBookFormProps) => {
           type="submit"
           className="bg-[#FF7F50] text-white p-2 rounded-2xl w-25 cursor-pointer h-fit"
         >
-          Create
+          {!!updateBookInfo ? "Update" : "Create"}
         </button>
       </div>
     </form>
