@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+I started by creating a common Book type for the book management system, which is rendered on the UI. I used a Book[] array as an in-memory database to handle create, get, edit, and delete operations.
 
-## Getting Started
+First, I built the BookList component, which allows scrolling when there are many rows of book data. For the SearchBar, I implemented the logic using onChange and setState, so the search feature triggers every time the user types.
 
-First, run the development server:
+For BookForm, I used a single component for both create and edit modes, separated by props, and added validation for every field. I also built a reusable TextInputField component so I don’t have to style and customize each input field individually.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+I decided that ISBN should not be editable since it is unique data, so I disabled the ISBN field in edit mode. After editing, the updated book is rendered at the same index in the BookList.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Finally, I implemented soft delete by updating the book’s status to INACTIVE and disabling the edit and delete buttons in the BookList
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+What I want to implement but didn’t have enough time
+- I planned to implement React Hook Form and Zod with the TextInputField component. This would allow me to avoid managing state in every input field and let Zod handle form validation. I actually started implementing it, but I encountered an issue that took time to fix. Due to time constraints, I decided to revert to using basic useState and onChange.
+- For BookStats, I didn’t have enough time to complete it. My idea was to update the qty field to be an object that includes:
+ 1. qtyStockAvailable
+ 2. qtyStockBorrow
+ 3. qtyStockTotal
+This would allow me to provide more detailed statistics for the dashboard (BookStats) and BookCard's details.
+- I also wanted to:
+  1. Add a createdAt field to each book.
+  2. Implement sorting functionality for each column in the BookList table.
+  3. Add custom validation for each field. For example: ISBN and qty input should accept only positive integers when user typing.
+  4. Category should be implemented as a selector instead of a text input.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+  How to run the project
+  1. Clone the project
+  2. cd frontend
+  3. npm install
+  4. npm run dev
+  5. open http://localhost:3000
